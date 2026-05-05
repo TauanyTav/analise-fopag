@@ -238,18 +238,29 @@ def get_data():
 
     df = pd.DataFrame(records)
 
+    # ── Totais reais da folha (linha 9 da planilha) ──
+    # Estes são os totais CORRETOS para KPIs e evolução mensal.
+    # A soma dos times individuais é menor pois não inclui encargos/benefícios globais.
+    totais_people = {
+        "Fech_Jan": 3600312.70, "Fech_Fev": 3418096.24, "Fech_Mar": 3875704.07,
+        "Fech_1T":  10894113.01,
+        "Orc_Jan":  3478663.24, "Orc_Fev":  3541853.25, "Orc_Mar":  3675770.30,
+        "Orc_1T":   10696286.80,
+        "Orc_Abr":  3518458.09, "Orc_Mai":  4095454.41, "Orc_Jun":  4185633.10,
+        "Orc_Jul":  3787205.74, "Orc_Ago":  4326479.59, "Orc_Set":  4189606.91,
+        "Orc_Out":  4330822.03, "Orc_Nov":  4379711.67, "Orc_Dez":  3645756.67,
+    }
+
     # Total People (da linha 9 da planilha)
     df_people = pd.DataFrame([{
-        "Time": "People (Total)",
-        "Área": "People",
+        "Time": "People (Total)", "Área": "People",
         "Fech_Jan": 3600312.70, "Fech_Fev": 3418096.24, "Fech_Mar": 3875704.07,
         "Fech_1T2026": 10894113.01,
-        "Orc_Jan": 3478663.24,
-        "Orc_1T2026": 10696286.80,
-        "AB_ratio": 0.0185,
+        "Orc_Jan": 3478663.24, "Orc_Fev": 3541853.25, "Orc_Mar": 3675770.30,
+        "Orc_1T2026": 10696286.80, "AB_ratio": 0.0185,
     }])
 
-    return df, df_people
+    return df, totais_people
 
 # ─── HELPERS ────────────────────────────────────────────────────────────────
 def brl(v, compact=False):
@@ -327,14 +338,25 @@ def chart_grouped_bar(df_bu, time_col, cols, labels, title=""):
     return fig
 
 
-def chart_waterfall(df, xcol, ycol):
+def chart_waterfall(df, xcol, ycol, total_override=None):
     df_s = df.sort_values(ycol, ascending=False)
-    total = df_s[ycol].sum()
+    total = total_override if total_override is not None else df_s[ycol].sum()
+    # Se há override, adiciona uma barra "Outros" para a diferença
+    xs = df_s[xcol].tolist()
+    ys = df_s[ycol].tolist()
+    measures = ["relative"] * len(df_s)
+    if total_override is not None:
+        diff = total_override - df_s[ycol].sum()
+        if abs(diff) > 1:
+            xs.append("Outros/Encargos")
+            ys.append(diff)
+            measures.append("relative")
+    xs.append("TOTAL")
+    ys.append(total)
+    measures.append("total")
+
     fig = go.Figure(go.Waterfall(
-        orientation="v",
-        measure=["relative"]*len(df_s)+["total"],
-        x=df_s[xcol].tolist()+["TOTAL"],
-        y=df_s[ycol].tolist()+[total],
+        orientation="v", measure=measures, x=xs, y=ys,
         connector=dict(line=dict(color="rgba(0,87,255,0.15)")),
         increasing=dict(marker=dict(color="#0057FF")),
         totals=dict(marker=dict(color="#00c897")),
@@ -362,23 +384,35 @@ def chart_ab(df, time_col, ab_col):
     return fig
 
 
-def chart_area_meses(df_filtered):
-    # Fechamento real: Jan, Fev, Mar
+def chart_area_meses(df_filtered, totais_people):
+    """
+    totais_people: dict com os totais reais da linha 9 (People/folha total).
+    Usado quando todos os times estão selecionados.
+    df_filtered é usado quando há filtro de times (subtotal dos filtrados).
+    """
+    todos_selecionados = len(df_filtered) == 17  # total de times
+
     meses_fech = ["Jan", "Fev", "Mar"]
-    totais_fech = [df_filtered[f"Fech_{m}"].sum() for m in meses_fech]
+    if todos_selecionados:
+        totais_fech = [totais_people[f"Fech_{m}"] for m in meses_fech]
+    else:
+        totais_fech = [df_filtered[f"Fech_{m}"].sum() for m in meses_fech]
 
-    # Orçamento: Jan, Fev, Mar (realizados) + Abr..Dez (projetados)
-    meses_orc_1t = ["Jan", "Fev", "Mar"]
-    totais_orc_1t = [df_filtered[f"Orc_{m}"].sum() for m in meses_orc_1t]
-
+    meses_orc_1t  = ["Jan", "Fev", "Mar"]
     meses_orc_fut = ["Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-    totais_orc_fut = [df_filtered[f"Orc_{m}"].sum() if f"Orc_{m}" in df_filtered.columns else 0 for m in meses_orc_fut]
+
+    if todos_selecionados:
+        totais_orc_1t  = [totais_people[f"Orc_{m}"] for m in meses_orc_1t]
+        totais_orc_fut = [totais_people[f"Orc_{m}"] for m in meses_orc_fut]
+    else:
+        totais_orc_1t  = [df_filtered[f"Orc_{m}"].sum() for m in meses_orc_1t]
+        totais_orc_fut = [df_filtered[f"Orc_{m}"].sum() if f"Orc_{m}" in df_filtered.columns else 0
+                          for m in meses_orc_fut]
 
     todos_meses_orc = meses_orc_1t + meses_orc_fut
     todos_vals_orc  = totais_orc_1t + totais_orc_fut
 
     fig = go.Figure()
-    # Linha de fechamento real
     fig.add_trace(go.Scatter(
         x=meses_fech, y=totais_fech, name="Fechamento Real",
         mode="lines+markers",
@@ -387,7 +421,6 @@ def chart_area_meses(df_filtered):
         fill="tozeroy", fillcolor="rgba(0,87,255,0.07)",
         hovertemplate="<b>%{x}</b><br>Real: R$ %{y:,.0f}<extra></extra>"
     ))
-    # Linha de orçamento completo (Jan-Dez)
     fig.add_trace(go.Scatter(
         x=todos_meses_orc, y=todos_vals_orc, name="Orçamento",
         mode="lines+markers",
@@ -415,7 +448,7 @@ def chart_treemap(df, time_col, grupo_col, val_col):
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
 def main():
-    df, df_people = get_data()
+    df, totais_people = get_data()
 
     # ── Sidebar ──────────────────────────────────────────────────────────────
     with st.sidebar:
@@ -445,9 +478,12 @@ def main():
     # ── Filtrar dados ────────────────────────────────────────────────────────
     df_f = df[df["Time"].isin(bu_filter)].copy()
 
+    todos_selecionados = len(df_f) == len(df)
     val_col = "Fech_1T2026" if "Fechamento" in visao else "Orc_1T2026"
-    total_real = df_f["Fech_1T2026"].sum()
-    total_orc  = df_f["Orc_1T2026"].sum()
+
+    # Usa totais da linha 9 (People) quando todos os times estão selecionados
+    total_real = totais_people["Fech_1T"] if todos_selecionados else df_f["Fech_1T2026"].sum()
+    total_orc  = totais_people["Orc_1T"]  if todos_selecionados else df_f["Orc_1T2026"].sum()
     total_ab   = (total_real - total_orc) / total_orc if total_orc else 0
     maior_bu   = df_f.loc[df_f["Fech_1T2026"].idxmax(), "Time"]
     maior_val  = df_f["Fech_1T2026"].max()
@@ -565,7 +601,7 @@ def main():
     # ══════════════════════════════════════════
     with tab3:
         st.markdown('<div class="sec"><span class="sec-dot">▌</span> Evolução Mensal: Realizado Jan–Mar + Orçamento Jan–Dez 2026</div>', unsafe_allow_html=True)
-        st.plotly_chart(chart_area_meses(df_f), use_container_width=True)
+        st.plotly_chart(chart_area_meses(df_f, totais_people), use_container_width=True)
 
         col_e, col_f = st.columns(2, gap="large")
         with col_e:
@@ -592,7 +628,8 @@ def main():
 
         with col_f:
             st.markdown(f'<div class="sec"><span class="sec-dot">▌</span> Waterfall Acumulado 1T2026 · {visao_label}</div>', unsafe_allow_html=True)
-            st.plotly_chart(chart_waterfall(df_f, "Time", val_col), use_container_width=True)
+            wf_total = totais_people["Fech_1T"] if (todos_selecionados and "Fechamento" in visao) else (totais_people["Orc_1T"] if todos_selecionados else None)
+            st.plotly_chart(chart_waterfall(df_f, "Time", val_col, total_override=wf_total), use_container_width=True)
 
         st.markdown('<div class="sec"><span class="sec-dot">▌</span> Variação Jan→Fev e Fev→Mar por Time (Fechamento Real)</div>', unsafe_allow_html=True)
         df_var = df_f[["Time","Fech_Jan","Fech_Fev","Fech_Mar"]].copy()
