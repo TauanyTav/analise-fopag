@@ -586,8 +586,8 @@ def main():
                 ))
             fig_m.update_layout(**LAYOUT, height=400,
                 xaxis=dict(showgrid=False, tickfont=dict(color="#b0bcd4")),
-                yaxis=dict(showgrid=True, gridcolor="rgba(0,87,255,0.07)", tickformat=",.0f"),
-                legend=dict(font=dict(size=9)))
+                yaxis=dict(showgrid=True, gridcolor="rgba(0,87,255,0.07)", tickformat=",.0f"))
+            fig_m.update_layout(legend=dict(font=dict(size=9)))
             st.plotly_chart(fig_m, use_container_width=True)
 
         with col_f:
