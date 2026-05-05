@@ -173,32 +173,27 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 @st.cache_data
 def get_data():
     # ── Dados extraídos da aba "Breakdown Alocação de Despesas" ──
-    # Hierarquia: Área > Time. Totalizadores (Marketing, Vendas, Produtos, Backoffice)
-    # são omitidos para não duplicar valores — a soma aparece nos gráficos por área.
+    # Colunas fechamento: Jan(3), Fev(4), Mar(5), 1T(6)
+    # Colunas orçamento:  Jan(8), Fev(9), Mar(10), 1T(11)
     rows = [
-        # Time                         Fech_Jan    Fech_Fev    Fech_Mar    Fech_1T      Orc_Jan     Orc_1T       AB         Área
-        # ── Marketing ──
-        ("Marketing B2C",           270557.22,  292022.64,  358501.78,   921081.64,  308232.15,   951974.03,  -0.0325,  "Marketing"),
-        ("Marketing B2B",            57361.58,   56677.26,   90147.48,   204186.32,   67426.65,   225129.86,  -0.0930,  "Marketing"),
-        # ── Vendas ──
-        ("Vendas B2C",              310408.30,  317192.50,  353725.60,   981326.40,  344958.00,  1065707.00,  -0.0792,  "Vendas"),
-        ("Vendas B2B",              350806.20,  332892.60,  392038.50,  1075737.30,  427684.00,  1327319.00,  -0.1895,  "Vendas"),
-        # ── Produtos ──
-        ("Produtos Corporate",      197234.80,  244442.70,  179786.50,   621464.00,  212292.00,   693946.00,  -0.1044,  "Produtos"),
-        ("Tech Academy",            122660.70,  121893.00,  166899.70,   411453.40,  120609.00,   361828.00,   0.1372,  "Produtos"),
-        ("Produtos Offline/Eventos", 78055.31,   77566.76,  109303.50,   264925.57,   99526.00,   298577.00,  -0.1127,  "Produtos"),
-        ("Produtos Inter",          330046.59,  228653.14,  241196.10,   799895.83,  260846.00,   784042.00,   0.0202,  "Produtos"),
-        # ── Backoffice ──
-        ("Contabilidade",            77844.00,   77356.00,  105919.00,   261119.00,   62104.00,   186312.00,   0.4015,  "Backoffice"),
-        ("Financeiro",               91831.31,   35988.59,   50973.30,   178793.20,   82980.00,   248941.00,  -0.2818,  "Backoffice"),
-        ("People",                   63560.00,   63162.00,   86484.00,   213206.00,   53298.00,   185921.00,   0.1468,  "Backoffice"),
-        ("Atendimento",              67813.22,   67388.77,   88022.63,   223224.62,   58515.00,   176799.00,   0.2626,  "Backoffice"),
-        ("Revops",                   99757.00,   98482.00,  132671.00,   330911.00,   91235.00,   273706.00,   0.2090,  "Backoffice"),
-        ("Facilites",                38521.20,   38280.09,   52414.30,   129215.59,   36031.00,   108092.00,   0.1954,  "Backoffice"),
-        ("Ops",                     115169.00,  113798.00,  129631.00,   358598.00,  156317.00,   496032.00,  -0.2771,  "Backoffice"),
-        ("Tech",                    321517.50,  260130.90,  316521.00,   898169.40,  324443.00,   980461.00,  -0.0839,  "Backoffice"),
-        # ── Diretoria ──
-        ("Diretoria",               831669.00,  831669.00,  831669.00,  2495006.00,  593667.00,  1781000.00,   0.4009,  "Diretoria"),
+        # Time                         Fech_Jan    Fech_Fev    Fech_Mar    Fech_1T      OrcJan     OrcFev     OrcMar     Orc_1T       AB         Área
+        ("Marketing B2C",           270557.22,  292022.64,  358501.78,   921081.64,  308232.15, 321870.94, 321870.94,  951974.03,  -0.0325,  "Marketing"),
+        ("Marketing B2B",            57361.58,   56677.26,   90147.48,   204186.32,   67426.65,  67426.65,  90276.56,  225129.86,  -0.0930,  "Marketing"),
+        ("Vendas B2C",              310408.30,  317192.50,  353725.60,   981326.40,  344958.00, 344958.00, 375790.00, 1065707.00,  -0.0792,  "Vendas"),
+        ("Vendas B2B",              350806.20,  332892.60,  392038.50,  1075737.30,  427684.00, 427684.00, 471952.00, 1327319.00,  -0.1895,  "Vendas"),
+        ("Produtos Corporate",      197234.80,  244442.70,  179786.50,   621464.00,  212292.00, 240827.00, 240827.00,  693946.00,  -0.1044,  "Produtos"),
+        ("Tech Academy",            122660.70,  121893.00,  166899.70,   411453.40,  120609.00, 120609.00, 120609.00,  361828.00,   0.1372,  "Produtos"),
+        ("Produtos Offline/Eventos", 78055.31,   77566.76,  109303.50,   264925.57,   99526.00,  99526.00,  99526.00,  298577.00,  -0.1127,  "Produtos"),
+        ("Produtos Inter",          330046.59,  228653.14,  241196.10,   799895.83,  260846.00, 260846.00, 262349.00,  784042.00,   0.0202,  "Produtos"),
+        ("Contabilidade",            77844.00,   77356.00,  105919.00,   261119.00,   62104.00,  62104.00,  62104.00,  186312.00,   0.4015,  "Backoffice"),
+        ("Financeiro",               91831.31,   35988.59,   50973.30,   178793.20,   82980.00,  82980.00,  82980.00,  248941.00,  -0.2818,  "Backoffice"),
+        ("People",                   63560.00,   63162.00,   86484.00,   213206.00,   53298.00,  66312.00,  66312.00,  185921.00,   0.1468,  "Backoffice"),
+        ("Atendimento",              67813.22,   67388.77,   88022.63,   223224.62,   58515.00,  58515.00,  59770.00,  176799.00,   0.2626,  "Backoffice"),
+        ("Revops",                   99757.00,   98482.00,  132671.00,   330911.00,   91235.00,  91235.00,  91235.00,  273706.00,   0.2090,  "Backoffice"),
+        ("Facilites",                38521.20,   38280.09,   52414.30,   129215.59,   36031.00,  36031.00,  36031.00,  108092.00,   0.1954,  "Backoffice"),
+        ("Ops",                     115169.00,  113798.00,  129631.00,   358598.00,  156317.00, 164320.00, 175396.00,  496032.00,  -0.2771,  "Backoffice"),
+        ("Tech",                    321517.50,  260130.90,  316521.00,   898169.40,  324443.00, 324443.00, 331575.00,  980461.00,  -0.0839,  "Backoffice"),
+        ("Diretoria",               831669.00,  831669.00,  831669.00,  2495006.00,  593667.00, 593667.00, 593667.00, 1781000.00,   0.4009,  "Diretoria"),
     ]
 
     meses = ["Jan","Fev","Mar"]
@@ -227,13 +222,12 @@ def get_data():
 
     records = []
     for r in rows:
-        time_name, j, f, m, t1, orc_jan, orc_1t, ab, area = r
+        time_name, j, f, m, t1, orc_jan, orc_fev, orc_mar, orc_1t, ab, area = r
         rec = {
-            "Time": time_name,
-            "Área": area,
+            "Time": time_name, "Área": area,
             "Fech_Jan": j, "Fech_Fev": f, "Fech_Mar": m,
             "Fech_1T2026": t1,
-            "Orc_Jan": orc_jan,
+            "Orc_Jan": orc_jan, "Orc_Fev": orc_fev, "Orc_Mar": orc_mar,
             "Orc_1T2026": orc_1t,
             "AB_ratio": ab,
         }
@@ -369,34 +363,39 @@ def chart_ab(df, time_col, ab_col):
 
 
 def chart_area_meses(df_filtered):
-    meses_fech = ["Jan","Fev","Mar"]
-    totais = [df_filtered[f"Fech_{m}"].sum() for m in meses_fech]
-    orc_meses_fut = ["Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
-    orc_fut = []
-    for m in orc_meses_fut:
-        col = f"Orc_{m}"
-        if col in df_filtered.columns:
-            orc_fut.append(df_filtered[col].sum())
-        else:
-            orc_fut.append(0)
+    # Fechamento real: Jan, Fev, Mar
+    meses_fech = ["Jan", "Fev", "Mar"]
+    totais_fech = [df_filtered[f"Fech_{m}"].sum() for m in meses_fech]
+
+    # Orçamento: Jan, Fev, Mar (realizados) + Abr..Dez (projetados)
+    meses_orc_1t = ["Jan", "Fev", "Mar"]
+    totais_orc_1t = [df_filtered[f"Orc_{m}"].sum() for m in meses_orc_1t]
+
+    meses_orc_fut = ["Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+    totais_orc_fut = [df_filtered[f"Orc_{m}"].sum() if f"Orc_{m}" in df_filtered.columns else 0 for m in meses_orc_fut]
+
+    todos_meses_orc = meses_orc_1t + meses_orc_fut
+    todos_vals_orc  = totais_orc_1t + totais_orc_fut
 
     fig = go.Figure()
+    # Linha de fechamento real
     fig.add_trace(go.Scatter(
-        x=meses_fech, y=totais, name="Fechamento Real",
+        x=meses_fech, y=totais_fech, name="Fechamento Real",
         mode="lines+markers",
         line=dict(color="#0057FF", width=3),
         marker=dict(size=9, color="#4a8aff", line=dict(color="#060d1f", width=2)),
         fill="tozeroy", fillcolor="rgba(0,87,255,0.07)",
         hovertemplate="<b>%{x}</b><br>Real: R$ %{y:,.0f}<extra></extra>"
     ))
+    # Linha de orçamento completo (Jan-Dez)
     fig.add_trace(go.Scatter(
-        x=orc_meses_fut, y=orc_fut, name="Orçamento Projetado",
+        x=todos_meses_orc, y=todos_vals_orc, name="Orçamento",
         mode="lines+markers",
         line=dict(color="#00c897", width=2, dash="dot"),
         marker=dict(size=7, color="#00c897"),
         hovertemplate="<b>%{x}</b><br>Orç: R$ %{y:,.0f}<extra></extra>"
     ))
-    fig.update_layout(**LAYOUT, height=300,
+    fig.update_layout(**LAYOUT, height=320,
         xaxis=dict(showgrid=False, tickfont=dict(color="#b0bcd4")),
         yaxis=dict(showgrid=True, gridcolor="rgba(0,87,255,0.07)", tickformat=",.0f"))
     return fig
@@ -493,39 +492,39 @@ def main():
     ])
 
     # ══════════════════════════════════════════
-    # TAB 1 — VISÃO POR BU
+    # TAB 1 — VISÃO POR TIME
     # ══════════════════════════════════════════
     with tab1:
+        visao_label = "Fechamento 1T2026" if "Fechamento" in visao else "Orçamento 1T2026"
         col_a, col_b = st.columns([3,2], gap="large")
         with col_a:
-            st.markdown('<div class="sec"><span class="sec-dot">▌</span> Despesas por Time — Fechamento 1T2026</div>', unsafe_allow_html=True)
-            st.plotly_chart(chart_hbar(df_f, "Fech_1T2026", "Time"), use_container_width=True)
+            st.markdown(f'<div class="sec"><span class="sec-dot">▌</span> Despesas por Time — {visao_label}</div>', unsafe_allow_html=True)
+            st.plotly_chart(chart_hbar(df_f, val_col, "Time"), use_container_width=True)
         with col_b:
-            st.markdown('<div class="sec"><span class="sec-dot">▌</span> Distribuição % por Time</div>', unsafe_allow_html=True)
-            top9 = df_f.nlargest(9, "Fech_1T2026")
-            outros = df_f["Fech_1T2026"].sum() - top9["Fech_1T2026"].sum()
+            st.markdown(f'<div class="sec"><span class="sec-dot">▌</span> Distribuição % · {visao_label}</div>', unsafe_allow_html=True)
+            top9 = df_f.nlargest(9, val_col)
+            outros = df_f[val_col].sum() - top9[val_col].sum()
             lbls = top9["Time"].tolist()
-            vals = top9["Fech_1T2026"].tolist()
+            vals = top9[val_col].tolist()
             if outros > 0: lbls.append("Outros"); vals.append(outros)
             st.plotly_chart(chart_donut(lbls, vals), use_container_width=True)
 
-        st.markdown('<div class="sec"><span class="sec-dot">▌</span> Treemap Hierárquico · Área › Time</div>', unsafe_allow_html=True)
-        st.plotly_chart(chart_treemap(df_f, "Time", "Área", "Fech_1T2026"), use_container_width=True)
+        st.markdown(f'<div class="sec"><span class="sec-dot">▌</span> Treemap Hierárquico · Área › Time · {visao_label}</div>', unsafe_allow_html=True)
+        st.plotly_chart(chart_treemap(df_f, "Time", "Área", val_col), use_container_width=True)
 
-        # Donut por Grupo
         st.markdown('<div class="sec"><span class="sec-dot">▌</span> Composição por Área</div>', unsafe_allow_html=True)
-        df_grp = df_f.groupby("Área")["Fech_1T2026"].sum().reset_index().sort_values("Fech_1T2026", ascending=False)
-        st.plotly_chart(chart_donut(df_grp["Área"].tolist(), df_grp["Fech_1T2026"].tolist()), use_container_width=True)
+        df_grp = df_f.groupby("Área")[val_col].sum().reset_index().sort_values(val_col, ascending=False)
+        st.plotly_chart(chart_donut(df_grp["Área"].tolist(), df_grp[val_col].tolist()), use_container_width=True)
 
-        # Insights
         st.markdown('<div class="sec"><span class="sec-dot">▌</span> Insights Automáticos</div>', unsafe_allow_html=True)
-        top3 = df_f.nlargest(3,"Fech_1T2026")
-        pct3 = top3["Fech_1T2026"].sum() / total_real * 100
+        top3 = df_f.nlargest(3, val_col)
+        total_vis = df_f[val_col].sum()
+        pct3 = top3[val_col].sum() / total_vis * 100 if total_vis else 0
         maior_grp = df_grp.iloc[0]
         for txt in [
-            f"Top 3 Times (<strong>{', '.join(top3['Time'].tolist())}</strong>) concentram <strong>{pct3:.1f}%</strong> do total realizado no 1T2026.",
-            f"A área <strong>{maior_grp['Área']}</strong> tem a maior alocação: <strong>{brl(maior_grp['Fech_1T2026'])}</strong> ({maior_grp['Fech_1T2026']/total_real*100:.1f}% do total).",
-            f"Total realizado no 1T2026: <strong>{brl(total_real)}</strong> vs orçado <strong>{brl(total_orc)}</strong> — variação de <strong>{total_ab*100:+.1f}%</strong>.",
+            f"Top 3 Times (<strong>{', '.join(top3['Time'].tolist())}</strong>) concentram <strong>{pct3:.1f}%</strong> do total ({visao_label}).",
+            f"A área <strong>{maior_grp['Área']}</strong> tem a maior alocação: <strong>{brl(maior_grp[val_col])}</strong> ({maior_grp[val_col]/total_vis*100:.1f}% do total).",
+            f"Total realizado 1T2026: <strong>{brl(total_real)}</strong> vs orçado <strong>{brl(total_orc)}</strong> — variação de <strong>{total_ab*100:+.1f}%</strong>.",
         ]:
             st.markdown(f'<div class="ins">{txt}</div>', unsafe_allow_html=True)
 
@@ -565,35 +564,37 @@ def main():
     # TAB 3 — EVOLUÇÃO MENSAL
     # ══════════════════════════════════════════
     with tab3:
-        st.markdown('<div class="sec"><span class="sec-dot">▌</span> Evolução Mensal: Realizado + Projetado 2026</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec"><span class="sec-dot">▌</span> Evolução Mensal: Realizado Jan–Mar + Orçamento Jan–Dez 2026</div>', unsafe_allow_html=True)
         st.plotly_chart(chart_area_meses(df_f), use_container_width=True)
 
         col_e, col_f = st.columns(2, gap="large")
         with col_e:
-            st.markdown('<div class="sec"><span class="sec-dot">▌</span> Fechamento Mensal por Time (1T)</div>', unsafe_allow_html=True)
+            st.markdown('<div class="sec"><span class="sec-dot">▌</span> Fechamento Mensal por Time — Jan, Fev, Mar</div>', unsafe_allow_html=True)
             fig_m = go.Figure()
             meses = ["Jan","Fev","Mar"]
-            for i, bu in enumerate(df_f["Time"].tolist()):
-                row = df_f[df_f["Time"]==bu].iloc[0]
-                vals = [row[f"Fech_{m}"] for m in meses]
+            for i, time_name in enumerate(df_f["Time"].tolist()):
+                row = df_f[df_f["Time"]==time_name].iloc[0]
+                vals_f = [row[f"Fech_{m}"] for m in meses]
+                vals_o = [row[f"Orc_{m}"] for m in meses]
+                color = COLORS[i % len(COLORS)]
                 fig_m.add_trace(go.Scatter(
-                    x=meses, y=vals, name=bu,
+                    x=meses, y=vals_f, name=f"{time_name} (Real)",
                     mode="lines+markers",
-                    line=dict(color=COLORS[i % len(COLORS)], width=2),
+                    line=dict(color=color, width=2),
                     marker=dict(size=7),
-                    hovertemplate=f"<b>{bu}</b><br>%{{x}}: R$ %{{y:,.0f}}<extra></extra>"
+                    hovertemplate=f"<b>{time_name} Real</b><br>%{{x}}: R$ %{{y:,.0f}}<extra></extra>"
                 ))
-            fig_m.update_layout(**LAYOUT, height=380,
+            fig_m.update_layout(**LAYOUT, height=400,
                 xaxis=dict(showgrid=False, tickfont=dict(color="#b0bcd4")),
-                yaxis=dict(showgrid=True, gridcolor="rgba(0,87,255,0.07)", tickformat=",.0f"))
+                yaxis=dict(showgrid=True, gridcolor="rgba(0,87,255,0.07)", tickformat=",.0f"),
+                legend=dict(font=dict(size=9)))
             st.plotly_chart(fig_m, use_container_width=True)
 
         with col_f:
-            st.markdown('<div class="sec"><span class="sec-dot">▌</span> Waterfall Acumulado 1T2026</div>', unsafe_allow_html=True)
-            st.plotly_chart(chart_waterfall(df_f, "Time", "Fech_1T2026"), use_container_width=True)
+            st.markdown(f'<div class="sec"><span class="sec-dot">▌</span> Waterfall Acumulado 1T2026 · {visao_label}</div>', unsafe_allow_html=True)
+            st.plotly_chart(chart_waterfall(df_f, "Time", val_col), use_container_width=True)
 
-        # Variação mês a mês
-        st.markdown('<div class="sec"><span class="sec-dot">▌</span> Variação Jan→Fev e Fev→Mar por Time</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec"><span class="sec-dot">▌</span> Variação Jan→Fev e Fev→Mar por Time (Fechamento Real)</div>', unsafe_allow_html=True)
         df_var = df_f[["Time","Fech_Jan","Fech_Fev","Fech_Mar"]].copy()
         df_var["Δ Jan→Fev"] = df_var["Fech_Fev"] - df_var["Fech_Jan"]
         df_var["Δ Fev→Mar"] = df_var["Fech_Mar"] - df_var["Fech_Fev"]
